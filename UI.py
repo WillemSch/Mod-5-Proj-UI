@@ -2,10 +2,10 @@ from Tkinter import *
 import RPi.GPIO as GPIO
 
 # Declare pins
-fwdPin = 22;
-rvsPin = 23;
-lftPin = 24;
-rgtPin = 25;
+fwdPin = 22
+rvsPin = 23
+lftPin = 24
+rgtPin = 25
 
 # directions
 UP = 0
@@ -19,49 +19,41 @@ GPIO.setup([fwdPin, rvsPin, lftPin, rgtPin], GPIO.OUT)
 
 
 def pressedUp(event):
-    forward = True
     GPIO.output(fwdPin, GPIO.HIGH)
     print("UP")
 
 
 def pressedDown(event):
-    reverse = True
     GPIO.output(rvsPin, GPIO.HIGH)
     print("DOWN")
 
 
 def pressedLeft(event):
-    left = True
     GPIO.output(lftPin, GPIO.HIGH)
     print("LEFT")
 
 
 def pressedRight(event):
-    right = True
     GPIO.output(rgtPin, GPIO.HIGH)
     print("RIGHT")
 
 
 def releaseUp(event):
-    forward = False
     GPIO.output(fwdPin, GPIO.LOW)
     print("UP - Released")
 
 
 def releaseDown(event):
-    reverse = False
     GPIO.output(rvsPin, GPIO.LOW)
     print("DOWN - Released")
 
 
 def releaseLeft(event):
-    left = False
     GPIO.output(lftPin, GPIO.LOW)
     print("LEFT - Released")
 
 
 def releaseRight(event):
-    right = False
     GPIO.output(rgtPin, GPIO.LOW)
     print("RIGHT - Released")
 
