@@ -57,8 +57,11 @@ def releaseRight(event):
     GPIO.output(rgtPin, GPIO.LOW)
     print("RIGHT - Released")
 
+def on_closing():
+    GPIO.cleanup()
 
 master = Tk()
+master.protocol("WM_DELETE_WINDOW", on_closing)
 
 f = Frame(master, width=1000, height=750)
 f.pack()
