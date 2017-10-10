@@ -154,7 +154,7 @@ def loop():
 
 
 def get_directions():
-    forward = True
+    forward = False
     reverse = False
     left = False
     right = False
