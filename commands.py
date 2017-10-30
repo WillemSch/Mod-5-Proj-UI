@@ -1,7 +1,12 @@
 import socket
 import struct
 from parse_data import *
+from enum import Enum
 
+class steer_state(Enum):
+    LEFT = -1
+    STRAIGHT = 0
+    RIGHT = 1
 
 MCAST_GRP = '224.1.1.1'
 MCAST_PORT = 8845
@@ -14,12 +19,22 @@ mreq = struct.pack("4sl", socket.inet_aton(MCAST_GRP), socket.INADDR_ANY)
 
 sock.setsockopt(socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, mreq)
 
-state = {"accel": False, "decel": False,"left": False, "right": False}
+state = {"accel": False, "decel": False, "left": False, "right": False}
 
-DEADZONE = 180
+# -1: left, 0: straight, 1: right
+steer_state = 0
 
-skiprate = 5
+# Index of speeds list
+speed_state = 3
+speeds = [-1.0, -0.3, -0.1, 0.0, 0.1, 0.3, 1.0]
+
+Y_DEADZONE = 8
+X_DEADZONE = 8
+
+skiprate = 1
 count = 0
+
+prev_accel = { 'x': 0, 'y': 0, 'z': 0 }
 
 while True:
     raw_data = sock.recv(10240)
@@ -27,21 +42,37 @@ while True:
     if count % skiprate != 0:
         continue
     gyro = parse_gyro(raw_data)
+    accel = parse_accel(raw_data)
 
-    if gyro['y'] > DEADZONE:
-        state['accel'] = True
-    if gyro['y'] < -DEADZONE:
-        state['accel'] = False
+    if prev_accel['y'] > Y_DEADZONE and accel['y'] <= Y_DEADZONE:
+        if steer_state == -1:
+            steer_state = 0
+        elif steer_state == 0:
+            steer_state = 1
+        print("TRIGGERED")
+    elif prev_accel['y'] < -Y_DEADZONE and accel['y'] >= -Y_DEADZONE:
+        if steer_state == 1:
+            steer_state = 0
+        elif steer_state == 0:
+            steer_state = -1
+        print("TRIGGERED")
 
-    if gyro['x'] > DEADZONE:
-        if state['right']:
-            state['right'] = False
-        else:
-            state['left'] = True
-    if gyro['x'] < -DEADZONE:
-        if state['left']:
-            state['left'] = False
-        else:
-            state['right'] = True
 
-    print(str(int(state['left'])) + " " + str(int(state['right'])))
+    if prev_accel['x'] > X_DEADZONE and accel['x'] <= X_DEADZONE:
+        if speed_state > 0:
+            speed_state -= 1
+    if prev_accel['x'] < -X_DEADZONE and accel['x'] >= -X_DEADZONE:
+        if speed_state < len(speeds) - 1:
+            speed_state += 1
+
+    state['left'] = steer_state == -1
+    state['right'] = steer_state == 1
+
+    # print("Left: " + str(int(state['left'])) + \
+    #      " Right: " + str(int(state['right']))+ \
+    #      " Accel: " + str(int(state['accel'])) + \
+    #      " Decel: " + str(int(state['decel'])))
+    print("steer_state: " + str(steer_state) + \
+          " speed_state: " + str(speeds[speed_state]))
+
+    prev_accel = accel

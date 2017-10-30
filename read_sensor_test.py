@@ -1,6 +1,7 @@
 # from mpu6050 import mpu6050
 import socket
 import time
+import math
 
 # sensor = mpu6050(0x68)
 
@@ -10,6 +11,10 @@ MCAST_PORT = 8845
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
 sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, 2)
 
+speed = { 'x': 0, 'y': 0, 'z': 0 }
+orientation = { 'x': 0, 'y': 0, 'z': 0 }
+
+i = 0
 
 current_time = time.time()
 
@@ -18,13 +23,13 @@ while True:
     current_time = time.time()
 
     # Get data
-    gyro_data_dict = { 'x': 0, 'y': 0, 'z': 0 }
+    gyro_data_dict = { 'x': math.sin(i / 30.0), 'y': math.sin(i / 10.0), 'z': math.sin(i / 60.0) }
     # gyro_data_dict = sensor.get_gyro_data()
     gyro_data = str(gyro_data_dict['x']) + " " + \
                 str(gyro_data_dict['y']) + " " + \
                 str(gyro_data_dict['z'])
 
-    accel_data_dict = { 'x': 0, 'y': 0, 'z': 0 }
+    accel_data_dict = { 'x': math.sin(i / 45.0), 'y': math.sin(i / 5.0), 'z': math.sin(i / 100.0) }
     # accel_data_dict = sensor.get_accel_data()
     accel_data = str(accel_data_dict['x']) + " " + \
                  str(accel_data_dict['y']) + " " + \
@@ -43,7 +48,8 @@ while True:
     orientation_data = str(orientation['x']) + " " + str(orientation['y'])\
         + " " + str(orientation['z'])
 
-    sock.sendto(accel_data + " " + gyro_data + " " + \
-        orientation_data + " " + speed_data, (MCAST_GRP, MCAST_PORT))
+    sock.sendto((accel_data + " " + gyro_data + " " + \
+        orientation_data + " " + speed_data).encode(encoding='UTF-8'), (MCAST_GRP, MCAST_PORT))
 
+    i += 1
     time.sleep(1/30.0)
