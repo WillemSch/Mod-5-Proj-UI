@@ -2,11 +2,8 @@ import socket
 import struct
 from parse_data import *
 from enum import Enum
-
-class steer_state(Enum):
-    LEFT = -1
-    STRAIGHT = 0
-    RIGHT = 1
+import buzzer
+import time
 
 MCAST_GRP = '224.1.1.1'
 MCAST_PORT = 8845
@@ -35,6 +32,8 @@ skiprate = 1
 count = 0
 
 prev_accel = { 'x': 0, 'y': 0, 'z': 0 }
+prev_steer_state = steer_state
+prev_speed_state = speed_state
 
 while True:
     raw_data = sock.recv(10240)
@@ -49,13 +48,11 @@ while True:
             steer_state = 0
         elif steer_state == 0:
             steer_state = 1
-        print("TRIGGERED")
     elif prev_accel['y'] < -Y_DEADZONE and accel['y'] >= -Y_DEADZONE:
         if steer_state == 1:
             steer_state = 0
         elif steer_state == 0:
             steer_state = -1
-        print("TRIGGERED")
 
 
     if prev_accel['x'] > X_DEADZONE and accel['x'] <= X_DEADZONE:
@@ -68,6 +65,9 @@ while True:
     state['left'] = steer_state == -1
     state['right'] = steer_state == 1
 
+    if prev_steer_state != steer_state or prev_speed_state != speed_state:
+        buzzer.buzz(0.2)
+
     # print("Left: " + str(int(state['left'])) + \
     #      " Right: " + str(int(state['right']))+ \
     #      " Accel: " + str(int(state['accel'])) + \
@@ -76,3 +76,5 @@ while True:
           " speed_state: " + str(speeds[speed_state]))
 
     prev_accel = accel
+    prev_steer_state = steer_state
+    prev_speed_state = speed_state
