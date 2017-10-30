@@ -1,6 +1,7 @@
 # from mpu6050 import mpu6050
 import socket
 import time
+import math
 
 # sensor = mpu6050(0x68)
 
