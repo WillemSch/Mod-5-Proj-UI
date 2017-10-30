@@ -10,6 +10,9 @@ MCAST_PORT = 8845
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
 sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, 2)
 
+speed = { 'x': 0, 'y': 0, 'z': 0 }
+orientation = { 'x': 0, 'y': 0, 'z': 0 }
+
 i = 0
 
 current_time = time.time()
