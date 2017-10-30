@@ -1,6 +1,7 @@
 # from mpu6050 import mpu6050
 import socket
 import time
+import math
 
 # sensor = mpu6050(0x68)
 
@@ -47,8 +48,8 @@ while True:
     orientation_data = str(orientation['x']) + " " + str(orientation['y'])\
         + " " + str(orientation['z'])
 
-    sock.sendto(accel_data + " " + gyro_data + " " + \
-        orientation_data + " " + speed_data, (MCAST_GRP, MCAST_PORT))
+    sock.sendto((accel_data + " " + gyro_data + " " + \
+        orientation_data + " " + speed_data).encode(encoding='UTF-8'), (MCAST_GRP, MCAST_PORT))
 
     i += 1
     time.sleep(1/30.0)
