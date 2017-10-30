@@ -1,8 +1,8 @@
-# from mpu6050 import mpu6050
+from mpu6050 import mpu6050
 import socket
 import time
 
-# sensor = mpu6050(0x68)
+sensor = mpu6050(0x68)
 
 MCAST_GRP = '224.1.1.1'
 MCAST_PORT = 8845
@@ -26,12 +26,14 @@ while True:
     current_time = time.time()
 
     # Get data
-    gyro_data_dict = { 'x': 1, 'y': 2, 'z': 3 } #sensor.get_gyro_data()
+    gyro_data_dict = { 'x': 0, 'y': 0, 'z': 0 }
+    gyro_data_dict = sensor.get_gyro_data()
     gyro_data = str(gyro_data_dict['x']) + " " + \
                 str(gyro_data_dict['y']) + " " + \
                 str(gyro_data_dict['z'])
 
-    accel_data_dict = { 'x': 4, 'y': 5, 'z': 6 } #sensor.get_accel_data()
+    accel_data_dict = { 'x': 0, 'y': 0, 'z': 0 }
+    accel_data_dict = sensor.get_accel_data()
     accel_data = str(accel_data_dict['x']) + " " + \
                  str(accel_data_dict['y']) + " " + \
                  str(accel_data_dict['z'])

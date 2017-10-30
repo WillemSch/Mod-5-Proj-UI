@@ -1,5 +1,6 @@
 import socket
 import struct
+import parse_data
 
 MCAST_GRP = '224.1.1.1'
 MCAST_PORT = 8845
@@ -13,4 +14,10 @@ mreq = struct.pack("4sl", socket.inet_aton(MCAST_GRP), socket.INADDR_ANY)
 sock.setsockopt(socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, mreq)
 
 while True:
-  print sock.recv(10240)
+  data = sock.recv(10240)
+
+  gyro = parse_data.parse_gyro(data)
+
+  print("{:10.4f}".format(gyro['x']) + \
+        "{:10.4f}".format(gyro['y']) + \
+        "{:10.4f}".format(gyro['z']))
