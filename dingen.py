@@ -11,6 +11,15 @@ size = width, height = 1280, 720
 black = 0, 0, 0
 white = 255, 255, 255
 red = 255, 100, 100
+blue = 100, 255, 100
+yellow = 100, 100, 255
+
+ISGYRO = False
+
+if ISGYRO == False:
+	c = -100
+else:
+	c = -5
 
 screen = pygame.display.set_mode(size)
 
@@ -36,11 +45,9 @@ while True:
 	Drawing
 	"""
 	screen.fill(black)
-	rect1 = pygame.draw.rect(screen, red, (50, 150, 100, 50))
-	if int(gyro['x']) > 0:
-		rect1.inflate_ip(100, 50)
-	else:
-		rect1.inflate_ip(0,0)
+	rectx = pygame.draw.rect(screen, red, (80, 300, 100, (gyro['x']*c)))
+	recty = pygame.draw.rect(screen, blue, (180, 300, 100, (gyro['y']*c)))
+	rectz = pygame.draw.rect(screen, yellow, (280, 300, 100, (gyro['z']*c)))
 	label1 = myfont.render(str(gyro['x']), 1, (255,255,0))
 	label2 = myfont.render(str(gyro['y']), 1, (255,255,0))
 	label3 = myfont.render(str(gyro['z']), 1, (255,255,0))
