@@ -4,9 +4,15 @@ from parse_data import *
 from enum import Enum
 import buzzer
 import time
+import RPi.GPIO as GPIO
 
 MCAST_GRP = '224.1.1.1'
 MCAST_PORT = 8845
+
+GPIO.cleanup()
+for pin in range(5, 9):
+    GPIO.setmode(GPIO.BCM)
+    GPIO.setup(pin, GPIO.OUT)
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
 sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -64,9 +70,17 @@ while True:
 
     state['left'] = steer_state == -1
     state['right'] = steer_state == 1
+    state['accel'] = speeds[speed_state] > 0
+    state['decel'] = speeds[speed_state] < 0
 
-    if prev_steer_state != steer_state or prev_speed_state != speed_state:
-        buzzer.buzz(0.2)
+
+    GPIO.output(5, state['left'])
+    GPIO.output(6, state['right'])
+    GPIO.output(7, state['accel'])
+    GPIO.output(8, state['decel'])
+
+    # if prev_steer_state != steer_state or prev_speed_state != speed_state:
+    #     buzzer.buzz(0.2)
 
     # print("Left: " + str(int(state['left'])) + \
     #      " Right: " + str(int(state['right']))+ \

@@ -14,10 +14,22 @@ mreq = struct.pack("4sl", socket.inet_aton(MCAST_GRP), socket.INADDR_ANY)
 sock.setsockopt(socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, mreq)
 
 while True:
-  data = sock.recv(10240)
+    data = sock.recv(10240)
 
-  gyro = parse_data.parse_gyro(data)
+    gyro = parse_data.parse_gyro(data)
+    accel = parse_data.parse_accel(data)
 
-  print("{:10.4f}".format(gyro['x']) + \
-        "{:10.4f}".format(gyro['y']) + \
-        "{:10.4f}".format(gyro['z']))
+    print("{:10.0f}".format(accel['x']) + \
+        "{:10.0f}".format(accel['y']) + \
+        "{:10.0f}".format(accel['z']))
+    # print("{:10.0f}".format(gyro['x']) + \
+    #       "{:10.0f}".format(gyro['y']) + \
+    #       "{:10.0f}".format(gyro['z']))
+
+
+"""
+-x: accelerate
++x: decelerate
+-y: right
++y: left
+"""
