@@ -15,7 +15,7 @@ red = 255, 100, 100
 blue = 100, 255, 100
 yellow = 100, 100, 255
 
-ISGYRO = False
+ISGYRO = True
 
 if ISGYRO == False:
 	c1 = -100
@@ -37,20 +37,25 @@ mreq = struct.pack("4sl", socket.inet_aton(MCAST_GRP), socket.INADDR_ANY)
 
 sock.setsockopt(socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, mreq)
 
+def reformat (color):
+	return int (round (color[0] * 255)), int (round (color[1] * 255)), int (round (color[2] * 255))
+
 while True:
 	for event in pygame.event.get():
 		if event.type == pygame.QUIT: sys.exit()
 	data = sock.recv(10240)
 	data = data.decode(encoding='UTF-8')
 	gyro = parse_data.parse_gyro(data)
-	
-	def reformat (color):
-		return int (round (color[0] * 255)), int (round (color[1] * 255)), int (round (color[2] * 255))
+
+	print("{:10.4f}".format(gyro['x']) + \
+		"{:10.4f}".format(gyro['y']) + \
+		"{:10.4f}".format(gyro['z']))
+
 	rgb1 = reformat (colorsys.hls_to_rgb(abs(gyro['x']*c2), 0.5, 1))
 	rgb2 = reformat (colorsys.hls_to_rgb(abs(gyro['y']*c2), 0.5, 1))
 	rgb3 = reformat (colorsys.hls_to_rgb(abs(gyro['z']*c2), 0.5, 1))
 
-	
+
 	"""
 	Drawing
 	"""
@@ -67,7 +72,3 @@ while True:
 	screen.blit(label3, (340, 100))
 	screen.blit(label4, (65,290))
 	pygame.display.flip()
-
-	print("{:10.4f}".format(gyro['x']) + \
-		"{:10.4f}".format(gyro['y']) + \
-		"{:10.4f}".format(gyro['z']))
