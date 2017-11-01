@@ -10,9 +10,19 @@ MCAST_GRP = '224.1.1.1'
 MCAST_PORT = 8845
 
 GPIO.cleanup()
+GPIO.setmode(GPIO.BCM)
 for pin in range(5, 9):
-    GPIO.setmode(GPIO.BCM)
     GPIO.setup(pin, GPIO.OUT)
+
+GPIO.setup(18, GPIO.OUT)
+GPIO.setup(23, GPIO.OUT)
+#
+accelerate_pwm = GPIO.PWM(18, 500)
+decelerate_pwm = GPIO.PWM(23, 500)
+
+accelerate_pwm.start(100)
+decelerate_pwm.start(100)
+
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
 sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -29,10 +39,10 @@ steer_state = 0
 
 # Index of speeds list
 speed_state = 3
-speeds = [-1.0, -0.3, -0.1, 0.0, 0.1, 0.3, 1.0]
+speeds = [-1.0, -0.3, -0.1, 0.0, 0.3, 0.5, 1.0]
 
-Y_DEADZONE = 8
-X_DEADZONE = 8
+Y_DEADZONE = 9
+X_DEADZONE = 9
 
 skiprate = 1
 count = 0
@@ -78,6 +88,13 @@ while True:
     GPIO.output(6, state['right'])
     GPIO.output(7, state['accel'])
     GPIO.output(8, state['decel'])
+
+    if state['accel']:
+        accelerate_pwm.ChangeDutyCycle(100 - 100 * speeds[speed_state])
+        decelerate_pwm.ChangeDutyCycle(100)
+    elif state['decel']:
+        decelerate_pwm.ChangeDutyCycle(100 - 100 * abs(speeds[speed_state]))
+        accelerate_pwm.ChangeDutyCycle(100)
 
     # if prev_steer_state != steer_state or prev_speed_state != speed_state:
     #     buzzer.buzz(0.2)
