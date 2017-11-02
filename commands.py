@@ -8,6 +8,7 @@ import RPi.GPIO as GPIO
 
 MCAST_GRP = '224.1.1.1'
 MCAST_PORT = 8845
+MCAST_SEND_PORT = 8846
 
 GPIO.cleanup()
 GPIO.setmode(GPIO.BCM)
@@ -22,6 +23,9 @@ decelerate_pwm = GPIO.PWM(23, 500)
 
 accelerate_pwm.start(0)
 decelerate_pwm.start(0)
+
+send_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
+send_sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, 2)
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
 sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -130,3 +134,6 @@ while True:
     prev_accel = accel
     prev_steer_state = steer_state
     prev_speed_state = speed_state
+
+    data = str(steer_state + " " + speeds[speed_state])
+    sock.sendto(data.encode(encoding="UTF-8"), (MCAST_GRP, MCAST_SEND_PORT))

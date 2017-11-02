@@ -12,8 +12,9 @@ def parse_gyro(data):
     gyro_dict['z'] = round(float(data.split(" ")[5]), 4)
     return gyro_dict
 
-# Takes the 3 acceleration axes and returns the orientation
-def grav_to_angle(x, y, z):
-    orientation = {'x': 0, 'y': 0, 'z': 0}
+def parse_steering_state(data):
+    return int(data.split(" ")[0])
 
-    return orientation
+def parse_speed_state(data):
+    return float(data.split(" ")[1])
+
