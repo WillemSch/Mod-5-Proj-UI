@@ -17,13 +17,12 @@ for pin in range(5, 9):
 
 GPIO.setup(18, GPIO.OUT)
 GPIO.setup(23, GPIO.OUT)
-#
+
 accelerate_pwm = GPIO.PWM(18, 500)
 decelerate_pwm = GPIO.PWM(23, 500)
 
-accelerate_pwm.start(100)
-decelerate_pwm.start(100)
-
+accelerate_pwm.start(0)
+decelerate_pwm.start(0)
 
 send_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
 send_sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, 2)
@@ -42,8 +41,9 @@ state = {"accel": False, "decel": False, "left": False, "right": False}
 steer_state = 0
 
 # Index of speeds list
-speed_state = 3
-speeds = [-1.0, -0.3, -0.1, 0.0, 0.3, 0.5, 1.0]
+STOP_SPEED_STATE = 3
+speed_state = STOP_SPEED_STATE
+speeds = [-1.0, -0.3, -0.1, 0.0, 0.1, 0.5, 1.0]
 
 Y_DEADZONE = 9
 X_DEADZONE = 9
@@ -55,13 +55,30 @@ prev_accel = { 'x': 0, 'y': 0, 'z': 0 }
 prev_steer_state = steer_state
 prev_speed_state = speed_state
 
+panic_time = -1
+
 while True:
     raw_data = sock.recv(10240)
     count += 1
-    if count % skiprate != 0:
+
+    if panic_time != -1 and count - panic_time < 30:
+        time.sleep(1/30.0)
+        steer_state = 0
+        speed_state = STOP_SPEED_STATE
         continue
+
     gyro = parse_gyro(raw_data)
     accel = parse_accel(raw_data)
+
+    panic = True
+    for v in gyro:
+        panic = panic and (int(abs(gyro[v])) == 250)
+
+    if panic:
+        print("PANIC")
+        steer_state = 0
+        speed_state = STOP_SPEED_STATE
+        panic_time = count
 
     if prev_accel['y'] > Y_DEADZONE and accel['y'] <= Y_DEADZONE:
         if steer_state == -1:
@@ -90,15 +107,19 @@ while True:
 
     GPIO.output(5, state['left'])
     GPIO.output(6, state['right'])
-    GPIO.output(7, state['accel'])
-    GPIO.output(8, state['decel'])
+    # GPIO.output(7, state['accel'])
+    # GPIO.output(8, state['decel'])
 
     if state['accel']:
-        accelerate_pwm.ChangeDutyCycle(100 - 100 * speeds[speed_state])
-        decelerate_pwm.ChangeDutyCycle(100)
+        accelerate_pwm.ChangeDutyCycle(100 * speeds[speed_state])
+        decelerate_pwm.ChangeDutyCycle(0)
     elif state['decel']:
-        decelerate_pwm.ChangeDutyCycle(100 - 100 * abs(speeds[speed_state]))
-        accelerate_pwm.ChangeDutyCycle(100)
+        decelerate_pwm.ChangeDutyCycle(100 * abs(speeds[speed_state]))
+        accelerate_pwm.ChangeDutyCycle(0)
+    if not state['accel'] and not state['decel']:
+        accelerate_pwm.ChangeDutyCycle(0)
+        decelerate_pwm.ChangeDutyCycle(0)
+
 
     # if prev_steer_state != steer_state or prev_speed_state != speed_state:
     #     buzzer.buzz(0.2)
