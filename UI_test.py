@@ -14,8 +14,10 @@ steer_state = 0
 speed_state = 0
 speeds = [-1, -0.3, -0.1, 0, 0.1, 0.3, 1]
 
+first = True
+
 while True:
-    steer_state = random.randint(-1, 1)
+    steer_state = random.randint(-1,1)
 
     data = str(steer_state) + " " + str(speeds[speed_state])
     print("Trying to send data: steer_state = " + str(steer_state))
