@@ -135,6 +135,6 @@ while True:
     prev_steer_state = steer_state
     prev_speed_state = speed_state
 
-    data = str(steer_state) + " " + str(speeds[speed_state])
+    state_data = str(steer_state) + " " + str(speeds[speed_state])
     print("Trying to send data: steer_state = " + str(steer_state))
-    send_sock.sendto(data.encode(encoding="UTF-8"), (MCAST_GRP, MCAST_SEND_PORT))
+    send_sock.sendto(state_data.encode(encoding="UTF-8"), (MCAST_GRP, MCAST_SEND_PORT))
