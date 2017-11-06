@@ -12,11 +12,11 @@ MCAST_SEND_PORT = 8846
 
 GPIO.cleanup()
 GPIO.setmode(GPIO.BCM)
-for pin in range(5, 9):
-    GPIO.setup(pin, GPIO.OUT)
+GPIO.setup(5, GPIO.OUT)     # left
+GPIO.setup(6, GPIO.OUT)     # right
 
-GPIO.setup(18, GPIO.OUT)
-GPIO.setup(23, GPIO.OUT)
+GPIO.setup(18, GPIO.OUT)    # accelerate
+GPIO.setup(23, GPIO.OUT)    # decelerate
 
 accelerate_pwm = GPIO.PWM(18, 500)
 decelerate_pwm = GPIO.PWM(23, 500)
@@ -135,6 +135,6 @@ while True:
     prev_steer_state = steer_state
     prev_speed_state = speed_state
 
-    data = str(steer_state) + " " + str(speeds[speed_state])
+    state_data = str(steer_state) + " " + str(speeds[speed_state])
     print("Trying to send data: steer_state = " + str(steer_state))
-    send_sock.sendto(data.encode(encoding="UTF-8"), (MCAST_GRP, MCAST_SEND_PORT))
+    send_sock.sendto(state_data.encode(encoding="UTF-8"), (MCAST_GRP, MCAST_SEND_PORT))
