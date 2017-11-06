@@ -69,37 +69,54 @@ def get_nearest_45(angle):
         return 315
 
 
-def calc_pos(x, angle, radius):
+def calc_pos(x, angle, radius, square_id=0):
     nearest_45 = get_nearest_45(angle)
     offset = math.cos(math.radians(math.fabs(nearest_45 - angle))) * (math.sqrt(2) * .5 * radius) - .5 * radius
     if x[0] <= x[1]:
         difference = x[1] - x[0]
-        return 0 - offset, .5 * difference - offset
+        if vertical:
+            return 0 - offset, .5 * difference - offset + x[1] * .5 * square_id
+        else:
+            return 0 - offset + x[0] * square_id, .5 * difference - offset
     else:
         difference = x[0] - x[1]
-        return .5 * difference - offset, 0
+        if vertical:
+            return .5 * difference - offset, 0 - offset + x[1] * square_id
+        else:
+            return .5 * difference - offset + x[0] * square_id, 0 - offset
 
 
 scale = size
 
 
-def get_steering(state):
+def get_steering():
     data = sock.recv(10240)
     data = data.decode(encoding='UTF-8')
     return parse_data.parse_steering_state(data)
 
 
+def get_speed():
+    data = sock.recv(10240)
+    data = data.decode(encoding='UTF-8')
+    return parse_data.parse_speed_state(data)
+
+
 steering_state = 0
+speed_state = 0
 setup = True
+vertical = size[0] < size[1]
 prev_time = time.localtime()
-current_angle = 0
+current_steer_angle = 0
+current_speed_angle = 0
 lastFrameTime = time.time()
 
 
 def listener():
     while True:
         global steering_state
-        steering_state = get_steering(steering_state)
+        global speed_state
+        speed_state = get_speed()
+        steering_state = get_steering()
         time.sleep(0.01)
 
 
@@ -115,6 +132,11 @@ while True:
         temp_wheel = pygame.transform.scale(wheel, wheel_scale)
         setup = False
 
+        if vertical:
+            halve = scale[0], scale[1] / 2
+        else:
+            halve = scale[0] / 2, scale[1]
+
     currentTime = time.time()
     dt = currentTime - lastFrameTime
     lastFrameTime = currentTime
@@ -125,9 +147,15 @@ while True:
         elif event.type == pygame.VIDEORESIZE:
             screen = pygame.display.set_mode(event.dict['size'], pygame.HWSURFACE | pygame.DOUBLEBUF | pygame.RESIZABLE)
             scale = event.dict['size']
+            vertical = scale[0] < scale[1]
             pygame.display.flip()
 
-            wheel_scale = minimum(scale)
+            if vertical:
+                halve = scale[0], int(scale[1] / 2)
+            else:
+                halve = int(scale[0] / 2), scale[1]
+
+            wheel_scale = minimum(halve)
             temp_wheel = pygame.transform.scale(wheel, wheel_scale)
 
     screen.blit(pygame.transform.scale(background, scale), (0, 0))
@@ -136,16 +164,27 @@ while True:
 
     temp_wheel = pygame.transform.scale(wheel, wheel_scale)
 
+    # calculate steering angle
     if steering_state == 1:
-        new_angle_wheel = animate_rotation(current_angle, 45, dt)
+        new_angle_wheel = animate_rotation(current_steer_angle, 45, dt)
     elif steering_state == -1:
-        new_angle_wheel = animate_rotation(current_angle, 315, dt)
+        new_angle_wheel = animate_rotation(current_steer_angle, 315, dt)
     else:
-        new_angle_wheel = animate_rotation(current_angle, 0, dt)
+        new_angle_wheel = animate_rotation(current_steer_angle, 0, dt)
 
+    # calculate speed angle
+    if speed_state >= 0:
+        speed_angle = animate_rotation(current_speed_angle, 45 * speed_state, dt)
+    else:
+        speed_angle = animate_rotation(current_speed_angle, 360 + 45 * speed_state, dt)
+
+
+    temp_speed = pygame.transform.rotate(temp_wheel, speed_angle)
     temp_wheel = pygame.transform.rotate(temp_wheel, new_angle_wheel)
-    screen.blit(temp_wheel, calc_pos(wheel_scale, new_angle_wheel, wheel_scale[0]))
-    current_angle = new_angle_wheel
+    screen.blit(temp_wheel, calc_pos(halve, new_angle_wheel, wheel_scale[0], square_id=0))
+    screen.blit(temp_speed, calc_pos(halve, speed_angle, wheel_scale[0], square_id=1))
+    current_steer_angle = new_angle_wheel
+    current_speed_angle = speed_angle
 
     pygame.display.flip()
     time.sleep(0.01)

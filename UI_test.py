@@ -18,7 +18,7 @@ first = True
 
 while True:
     steer_state = random.randint(-1, 1)
-    speed_state = speeds[random.randint(0, 6)]
+    speed_state = random.randint(0, 6)
 
     data = str(steer_state) + " " + str(speeds[speed_state])
     send_sock.sendto(data.encode(encoding="UTF-8"), (MCAST_GRP, MCAST_SEND_PORT))
