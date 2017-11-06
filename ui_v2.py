@@ -13,7 +13,7 @@ size = width, height = 1200, 600
 windows98 = 107, 127, 152
 
 screen = pygame.display.set_mode(size, pygame.HWSURFACE | pygame.DOUBLEBUF | pygame.RESIZABLE)
-pygame.display.set_caption('\"UI\"')
+pygame.display.set_caption('(ง ͡ʘ ͜ʖ ͡ʘ)ง')
 screen.fill(windows98)
 pygame.display.flip()
 
