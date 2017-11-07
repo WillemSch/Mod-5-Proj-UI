@@ -30,8 +30,8 @@ MCAST_GRP = '224.1.1.1'
 MCAST_PORT = 8845
 MCAST_PORT_STATE = 8846
 
-global steering_state
-global speed_state
+steering_state = 0
+speed_state = 0
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
 sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -101,9 +101,6 @@ while True:
 	stateright = pygame.draw.rect(screen, white, (530, 400, 100, 100))
 	statefwd = pygame.draw.rect(screen, white, (430, 300, 100, 100))
 	statebkwd = pygame.draw.rect(screen, white, (430, 400, 100, 100))
-	
-	global steering_state
-	global speed_state
 	
 	#Visualise state using buttons
 	if steering_state == -1:

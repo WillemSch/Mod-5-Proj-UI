@@ -35,11 +35,11 @@ mreq = struct.pack("4sl", socket.inet_aton(MCAST_GRP), socket.INADDR_ANY)
 sock.setsockopt(socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, mreq)
 
 
-def minimum(x):
-    if x[0] <= x[1]:
-        return x[0], x[0]
+def minimum(tuple):
+    if tuple[0] <= tuple[1]:
+        return tuple[0], tuple[0]
     else:
-        return x[1], x[1]
+        return tuple[1], tuple[1]
 
 
 def animate_rotation(prev_angle, target_rotation, delta_time):
@@ -69,21 +69,21 @@ def get_nearest_45(angle):
         return 315
 
 
-def calc_pos(x, angle, radius, square_id=0):
+def calc_pos(scale_tuple, angle, radius, square_id=0):
     nearest_45 = get_nearest_45(angle)
     offset = math.cos(math.radians(math.fabs(nearest_45 - angle))) * (math.sqrt(2) * .5 * radius) - .5 * radius
-    if x[0] <= x[1]:
-        difference = x[1] - x[0]
+    if scale_tuple[0] <= scale_tuple[1]:
+        difference = scale_tuple[1] - scale_tuple[0]
         if vertical:
-            return 0 - offset, .5 * difference - offset + x[1] * .5 * square_id
+            return 0 - offset, .5 * difference - offset + scale_tuple[1] * .5 * square_id
         else:
-            return 0 - offset + x[0] * square_id, .5 * difference - offset
+            return 0 - offset + scale_tuple[0] * square_id, .5 * difference - offset
     else:
-        difference = x[0] - x[1]
+        difference = scale_tuple[0] - scale_tuple[1]
         if vertical:
-            return .5 * difference - offset, 0 - offset + x[1] * square_id
+            return .5 * difference - offset, 0 - offset + scale_tuple[1] * square_id
         else:
-            return .5 * difference - offset + x[0] * square_id, 0 - offset
+            return .5 * difference - offset + scale_tuple[0] * square_id, 0 - offset
 
 
 scale = size
