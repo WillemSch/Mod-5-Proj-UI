@@ -10,14 +10,8 @@ MCAST_PORT = 8845
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
 sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, 2)
 
-print("Callibrating. You have 10 seconds to lay hold the glove still and flat.")
-
 speed = { 'x': 0, 'y': 0, 'z': 0 }
 orientation = { 'x': 0, 'y': 0, 'z': 0 }
-
-for i in range(1, 2):
-    time.sleep(1)
-    print(10 - i)
 
 current_time = time.time()
 
