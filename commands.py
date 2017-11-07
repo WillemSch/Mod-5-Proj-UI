@@ -81,15 +81,15 @@ while True:
         panic_time = count
 
     if prev_accel['y'] > Y_DEADZONE and accel['y'] <= Y_DEADZONE:
-        if steer_state == -1:
-            steer_state = 0
-        elif steer_state == 0:
-            steer_state = 1
-    elif prev_accel['y'] < -Y_DEADZONE and accel['y'] >= -Y_DEADZONE:
         if steer_state == 1:
             steer_state = 0
         elif steer_state == 0:
             steer_state = -1
+    elif prev_accel['y'] < -Y_DEADZONE and accel['y'] >= -Y_DEADZONE:
+        if steer_state == -1:
+            steer_state = 0
+        elif steer_state == 0:
+            steer_state = 1
 
 
     if prev_accel['x'] > X_DEADZONE and accel['x'] <= X_DEADZONE:

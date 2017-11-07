@@ -17,4 +17,3 @@ def parse_steering_state(data):
 
 def parse_speed_state(data):
     return float(data.split(" ")[1])
-
