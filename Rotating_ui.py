@@ -22,6 +22,8 @@ background = background.convert()
 background.fill((250, 250, 250))
 
 wheel = pygame.image.load("./imgs/wheel.png")
+meter = pygame.image.load("./imgs/meter.png")
+meter_bg = pygame.image.load("./imgs/meterbg.png")
 bg = pygame.image.load("./imgs/bg.jpg")
 
 MCAST_GRP = '224.1.1.1'
@@ -157,12 +159,15 @@ while True:
 
             wheel_scale = minimum(halve)
             temp_wheel = pygame.transform.scale(wheel, wheel_scale)
+            temp_speed = pygame.transform.scale(meter, wheel_scale)
 
     screen.blit(pygame.transform.scale(background, scale), (0, 0))
     screen.blit(pygame.transform.scale(bg, scale), (0, 0))
+    temp_meter_bg = pygame.transform.scale(meter_bg, wheel_scale)
     background.fill(windows98)
 
     temp_wheel = pygame.transform.scale(wheel, wheel_scale)
+    temp_speed = pygame.transform.scale(meter, wheel_scale)
 
     # calculate steering angle
     if steering_state == 1:
@@ -178,11 +183,11 @@ while True:
     else:
         speed_angle = animate_rotation(current_speed_angle, 360 + 45 * speed_state, dt)
 
-
-    temp_speed = pygame.transform.rotate(temp_wheel, speed_angle)
+    temp_speed = pygame.transform.rotate(temp_speed, speed_angle)
     temp_wheel = pygame.transform.rotate(temp_wheel, new_angle_wheel)
     screen.blit(temp_wheel, calc_pos(halve, new_angle_wheel, wheel_scale[0], square_id=0))
     screen.blit(temp_speed, calc_pos(halve, speed_angle, wheel_scale[0], square_id=1))
+    screen.blit(temp_meter_bg, calc_pos(halve, 0, wheel_scale[0], square_id=1))
     current_steer_angle = new_angle_wheel
     current_speed_angle = speed_angle
 
