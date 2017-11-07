@@ -13,7 +13,8 @@ myfont = pygame.font.SysFont("monospace", 15)
 size = width, height = 960, 540
 black = 0, 0, 0
 white = 255, 255, 255
-iets = 150, 0, 150
+gray = 155, 155, 155
+grey = 100, 100, 100
 
 #set constants for graph amplitude
 gyroamp = -0.29411
@@ -97,26 +98,38 @@ while True:
 	screen.blit(bg, (0, 0))
 	
 	#Draw state buttons and their outlines
-	stateleft = pygame.draw.rect(screen, white, (330, 400, 100, 100))
-	stateright = pygame.draw.rect(screen, white, (530, 400, 100, 100))
-	statefwd = pygame.draw.rect(screen, white, (430, 300, 100, 100))
-	statebkwd = pygame.draw.rect(screen, white, (430, 400, 100, 100))
+	stateleft = pygame.draw.rect(screen, gray, (330, 400, 100, 100))
+	stateright = pygame.draw.rect(screen, gray, (530, 400, 100, 100))
+	statefwd = pygame.draw.rect(screen, gray, (430, 300, 100, 100))
+	statebkwd = pygame.draw.rect(screen, gray, (430, 400, 100, 100))
+	
+	
+	buttonleft = myfont.render("left", 5, (255,255,0))
+	buttonright = myfont.render("right", 5, (255,255,0))
+	buttonfwd = myfont.render("fwd", 5, (255,255,0))
+	buttonbkwd = myfont.render("bkwd", 5, (255,255,0))
+
 	
 	#Visualise state using buttons
 	if steering_state == -1:
-		stateleft = pygame.draw.rect(screen, iets, (330, 400, 100, 100))
+		stateleft = pygame.draw.rect(screen, grey, (330, 400, 100, 100))
 	elif steering_state == 1:
-		stateright = pygame.draw.rect(screen, iets, (530, 400, 100, 100))	
+		stateright = pygame.draw.rect(screen, grey, (530, 400, 100, 100))	
 
 	if speed_state > 0:
-		statefwd = pygame.draw.rect(screen, iets, (430, 300, 100, 100))
+		statefwd = pygame.draw.rect(screen, grey, (430, 300, 100, 100))
 	elif speed_state < 0:
-		statebkwd = pygame.draw.rect(screen, iets, (430, 400, 100, 100))
+		statebkwd = pygame.draw.rect(screen, grey, (430, 400, 100, 100))
 	 
 	stateleftoutline = pygame.draw.rect(screen, black, (330, 400, 100, 100), 2)
 	staterightoutline = pygame.draw.rect(screen, black, (530, 400, 100, 100), 2)
 	statefwdoutline = pygame.draw.rect(screen, black, (430, 300, 100, 100), 2)	
 	statebkwdoutline = pygame.draw.rect(screen, black, (430, 400, 100, 100), 2)
+	
+	screen.blit(buttonfwd, (468, 343))
+	screen.blit(buttonbkwd, (463, 443))
+	screen.blit(buttonleft, (365, 443))
+	screen.blit(buttonright, (558, 443))
 
 		
 	#Draw dynamic gyroscope graphs and their outlines
@@ -167,7 +180,7 @@ while True:
 	#Set up and blit graph legends and title
 	gyrotitle = myfont.render("Gyroscope data in deg/s", 5, (255,255,0))
 	acceltitle = myfont.render("Accelerometer data in m/s", 5, (255,255,0))
-	graphlegend = myfont.render("x-axis	   y-axis	 z-axis", 5, (255,255,0))
+	graphlegend = myfont.render("x-axis    y-axis    z-axis", 5, (255,255,0))
 	screen.blit(gyrotitle, (90, 45))
 	screen.blit(graphlegend, (77, 60))
 	screen.blit(acceltitle, (669, 45))
