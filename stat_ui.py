@@ -127,9 +127,9 @@ while True:
 	elif speed_state == -0.1:
 		statebkwd = pygame.draw.rect(screen, grayer1, (430, 400, 100, 100))
 	elif speed_state == -0.3:
-		statefwd = pygame.draw.rect(screen, grayer2, (430, 300, 100, 100))
+		statefwd = pygame.draw.rect(screen, grayer2, (430, 400, 100, 100))
 	elif speed_state == -1.0:
-		statefwd = pygame.draw.rect(screen, grayer3, (430, 300, 100, 100))
+		statefwd = pygame.draw.rect(screen, grayer3, (430, 400, 100, 100))
 	 
 	stateleftoutline = pygame.draw.rect(screen, black, (330, 400, 100, 100), 2)
 	staterightoutline = pygame.draw.rect(screen, black, (530, 400, 100, 100), 2)
