@@ -117,8 +117,8 @@ def listener():
     while True:
         global steering_state
         global speed_state
-        speed_state = get_speed()
-        steering_state = get_steering()
+        speed_state = -1 * get_speed()
+        steering_state = -1 * get_steering()
         time.sleep(0.01)
 
 
