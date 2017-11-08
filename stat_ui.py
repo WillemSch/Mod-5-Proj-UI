@@ -14,7 +14,9 @@ size = width, height = 960, 540
 black = 0, 0, 0
 white = 255, 255, 255
 gray = 155, 155, 155
-grey = 100, 100, 100
+grayer1 = 120, 120, 120
+grayer2 = 80, 80, 80
+grayer3 = 40, 40, 40
 
 #set constants for graph amplitude
 gyroamp = -0.29411
@@ -112,14 +114,22 @@ while True:
 	
 	#Visualise state using buttons
 	if steering_state == -1:
-		stateleft = pygame.draw.rect(screen, grey, (330, 400, 100, 100))
+		stateleft = pygame.draw.rect(screen, grayer2, (330, 400, 100, 100))
 	elif steering_state == 1:
-		stateright = pygame.draw.rect(screen, grey, (530, 400, 100, 100))	
+		stateright = pygame.draw.rect(screen, grayer2, (530, 400, 100, 100))	
 
-	if speed_state > 0:
-		statefwd = pygame.draw.rect(screen, grey, (430, 300, 100, 100))
-	elif speed_state < 0:
-		statebkwd = pygame.draw.rect(screen, grey, (430, 400, 100, 100))
+	if speed_state == 0.1:
+		statefwd = pygame.draw.rect(screen, grayer1, (430, 300, 100, 100))
+	elif speed_state == 0.5:
+		statefwd = pygame.draw.rect(screen, grayer2, (430, 300, 100, 100))
+	elif speed_state == 1.0:
+		statefwd = pygame.draw.rect(screen, grayer3, (430, 300, 100, 100))
+	elif speed_state == -0.1:
+		statebkwd = pygame.draw.rect(screen, grayer1, (430, 400, 100, 100))
+	elif speed_state == -0.3:
+		statefwd = pygame.draw.rect(screen, grayer2, (430, 300, 100, 100))
+	elif speed_state == -1.0:
+		statefwd = pygame.draw.rect(screen, grayer3, (430, 300, 100, 100))
 	 
 	stateleftoutline = pygame.draw.rect(screen, black, (330, 400, 100, 100), 2)
 	staterightoutline = pygame.draw.rect(screen, black, (530, 400, 100, 100), 2)
